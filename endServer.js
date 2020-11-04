@@ -11,6 +11,8 @@ const port = process.env.port || 3000;
 
 // app.use(cors());
 app.use(cors());
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 
 app.get("/api", (req, res) => {
     db.query("select * from user", (error, results, fields) => {
@@ -20,21 +22,45 @@ app.get("/api", (req, res) => {
     });
 })
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }));
+
+app.post("/api/createaccont", (req, res) => {
+
+    userName = req.body.userName,
+        password = req.body.password,
+        firstName = req.body.firstName,
+        lastName = req.body.lastName,
+
+        db.query("insert into useraccount set ?",
+            {
+                userName: userName,
+                password: password,
+                firstName: firstName,
+                lastName: lastName
+            },
+            (error, results, field) => {
+                if (error) throw error;
+
+            })
+
+    res.end()
+})
+
+
 
 app.post("/api/posts", (req, res) => {
 
     let user = req.body.userName;
     let password = req.body.password;
-    db.query("select * from account where userName = ? and password=?", [user, password], (error, results, fields) => {
+    db.query("select * from useraccount where userName ='admin' and password='admin'", (error, results, fields) => {
         if (error) throw error;
+        const result = JSON.stringify(results);
+        res.send(result);
 
-        if (results.length) {
-            res.send("true")
-        } else {
-            res.send("false")
-        }
+        // if (results.length) {
+        //     res.send(result)
+        // } else {
+        //     res.send("false")
+        // }
 
         res.end()
     })
