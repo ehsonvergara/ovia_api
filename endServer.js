@@ -1,16 +1,86 @@
-const mysql = require("mysql");
-const connection = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "bbx_ovialand"
+const express = require("express");
+const path = require("path");
+const app = express();
+const db = require("./dbconfig.js");
+const cors = require("cors");
+const bodyParser = require('body-parser');
+// const favicon = require('serve-favicon');
+
+
+
+// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
+
+app.use(express.static(path.join(__filename, 'dbconfig')));
+const port = process.env.port || 3000;
+
+// app.use(cors());
+app.use(cors());
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
+
+app.get("/api", (req, res) => {
+    db.query("select * from user", (error, results, fields) => {
+        const userList = JSON.stringify(results);
+        res.send(userList);
+        res.end
+    });
 })
 
-connection.connect((err) => {
-    if (err) {
-        console.log(err)
-    }
-    // console.log(connection.threadId)
+
+app.post("/api/createaccont", (req, res) => {
+
+    userName = req.body.userName,
+        password = req.body.password,
+        firstName = req.body.firstName,
+        lastName = req.body.lastName,
+
+        db.query("insert into useraccount set ?",
+            {
+                userName: userName,
+                password: password,
+                firstName: firstName,
+                lastName: lastName
+            },
+            (error, results, field) => {
+                if (error) throw error;
+
+            })
+
+    res.end()
+})
+
+app.get("/api/getuserlist", (req, res) => {
+    db.query("Select * from useraccount", (error, results, field) => {
+        if (error) throw error;
+        const result = JSON.stringify(results);
+        res.send(result);
+        res.end
+    })
+
+})
+
+app.post("/api/posts", (req, res) => {
+
+    let user = req.body.userName;
+    let password = req.body.password;
+    db.query("select * from useraccount where userName ='admin' and password='admin'", (error, results, fields) => {
+        if (error) throw error;
+        const result = JSON.stringify(results);
+        res.send(result);
+
+        // if (results.length) {
+        //     res.send(result)
+        // } else {
+        //     res.send("false")
+        // }
+
+        res.end()
+    })
+    // console.log(user);
+
+})
+
+app.listen(port, () => {
+    console.log(`Connected to port ${port} ...`);
 });
 
-module.exports = connection;
