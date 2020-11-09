@@ -33,13 +33,15 @@ app.post("/api/createaccont", (req, res) => {
         password = req.body.password,
         firstName = req.body.firstName,
         lastName = req.body.lastName,
+        role = "client",
 
         db.query("insert into useraccount set ?",
             {
                 userName: userName,
                 password: password,
                 firstName: firstName,
-                lastName: lastName
+                lastName: lastName,
+                role: role
             },
             (error, results, field) => {
                 if (error) throw error;
@@ -59,17 +61,18 @@ app.get("/api/getuserlist", (req, res) => {
 
 })
 
-app.post("/api/posts", (req, res) => {
+app.post("/api/login", (req, res) => {
 
-    let user = req.body.userName;
+    let userName = req.body.userName;
     let password = req.body.password;
-    db.query("select * from useraccount where userName ='admin' and password='admin'", (error, results, fields) => {
+    db.query("select * from useraccount where userName = 'e@e.com' and password= 'q'", (error, results, fields) => {
+        // db.query("select * from useraccount where userName = ? and password= ?", [userName, password], (error, results, fields) => {
         if (error) throw error;
-        const result = JSON.stringify(results);
+        const result = JSON.stringify(); results
         res.send(result);
 
         // if (results.length) {
-        //     res.send(result)
+        //     res.send("tama")
         // } else {
         //     res.send("false")
         // }
@@ -80,6 +83,45 @@ app.post("/api/posts", (req, res) => {
 
 })
 
+//SALES 
+
+app.post("/api/createsaleslead", (req, res) => {
+
+    firstName = req.body.firstName,
+        lastName = req.body.lastName,
+        email = req.body.email,
+        address = req.body.address,
+        gender = req.body.gender,
+        unit1 = req.body.unit1,
+        unit2 = req.body.unit2,
+
+
+        db.query("insert into saleslead set ?",
+            {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                address: address,
+                gender: gender,
+                unit1: unit1,
+                unit2: unit2
+            },
+            (error, results, field) => {
+                if (error) throw error;
+
+            })
+
+    res.end()
+})
+app.get("/api/getsalesleads", (req, res) => {
+    db.query("Select * from saleslead", (error, results, field) => {
+        if (error) throw error;
+        const result = JSON.stringify(results);
+        res.send(result);
+        res.end
+    })
+
+})
 app.listen(port, () => {
     console.log(`Connected to port ${port} ...`);
 });
