@@ -1,14 +1,12 @@
 const express = require("express");
 const path = require("path");
-const app = express();
 const db = require("./dbconfig.js");
 const cors = require("cors");
 const bodyParser = require('body-parser');
-// const favicon = require('serve-favicon');
+// const { json } = require("express");
 
 
-
-// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
+const app = express();
 
 app.use(express.static(path.join(__filename, 'dbconfig')));
 const port = process.env.port || 3000;
@@ -24,6 +22,37 @@ app.get("/api", (req, res) => {
         res.send(userList);
         res.end
     });
+})
+
+app.post('/try', function (request, response) {
+    console.log(request.body);      // your JSON
+    response.send(request.body);    // echo the result back
+});
+
+app.post("/api/login", (req, res, next) => {
+
+    let userName = req.body.userName;
+    let password = req.body.password;
+
+    // db.query("select * from useraccount where userName = 'e@e' and password= 'q'", (error, results, fields) => {
+    db.query("select * from useraccount  where userName = ?  and password= ?", [userName, password], (error, results, fields) => {
+        if (error) throw error;
+        const result = JSON.stringify(results);
+        let user = {
+            userName: result.userName,
+            role: result.userName,
+            token: '1'
+        };
+
+        // console.log(results);
+        // res.send(result);
+        res.send(result);
+        res.end()
+
+    })
+
+
+
 })
 
 
@@ -51,6 +80,36 @@ app.post("/api/createaccont", (req, res) => {
     res.end()
 })
 
+app.post("/api/createadminaccount", (req, res) => {
+
+    console.log(req);
+
+    userName = req.body.email,
+        password = req.body.password,
+        firstName = req.body.firstName,
+        lastName = req.body.lastName,
+        address = req.body.address,
+        gender = req.body.gender,
+        role = req.body.role,
+        db.query("insert into useraccount set ?",
+            {
+                userName: userName,
+                password: password,
+                firstName: firstName,
+                lastName: lastName,
+                address: address,
+                gender: gender,
+                role: role,
+
+            },
+            (error, results, field) => {
+                if (error) throw error;
+
+            })
+
+    res.end()
+})
+
 app.get("/api/getuserlist", (req, res) => {
     db.query("Select * from useraccount", (error, results, field) => {
         if (error) throw error;
@@ -61,27 +120,6 @@ app.get("/api/getuserlist", (req, res) => {
 
 })
 
-app.post("/api/login", (req, res) => {
-
-    let userName = req.body.userName;
-    let password = req.body.password;
-    db.query("select * from useraccount where userName = 'e@e.com' and password= 'q'", (error, results, fields) => {
-        // db.query("select * from useraccount where userName = ? and password= ?", [userName, password], (error, results, fields) => {
-        if (error) throw error;
-        const result = JSON.stringify(); results
-        res.send(result);
-
-        // if (results.length) {
-        //     res.send("tama")
-        // } else {
-        //     res.send("false")
-        // }
-
-        res.end()
-    })
-    // console.log(user);
-
-})
 
 //SALES 
 
