@@ -9,7 +9,7 @@ const bodyParser = require('body-parser');
 const app = express();
 
 app.use(express.static(path.join(__filename, 'dbconfig')));
-const port = process.env.port || 3306;
+const port = process.env.port || 8080;
 
 // app.use(cors());
 app.use(cors());
